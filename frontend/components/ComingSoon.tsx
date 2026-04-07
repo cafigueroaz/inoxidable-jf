@@ -313,6 +313,45 @@ const BrandMarquee = () => (
   </div>
 );
 
+const SocialSection = () => (
+  <section className="social-cta">
+    <span className="label">Redes Sociales</span>
+    <h2 className="social-cta__title">Síguenos en Nuestras Redes</h2>
+    <div className="social-cta__links">
+      <a
+        href="https://www.tiktok.com/@funtec.acero.inox"
+        target="_blank"
+        rel="noopener noreferrer"
+        className="social-cta__link"
+      >
+        <Icon name="tiktok" size={28} />
+        <span>TikTok</span>
+      </a>
+      <a
+        href="https://www.instagram.com/funtecinoxidablejf/"
+        target="_blank"
+        rel="noopener noreferrer"
+        className="social-cta__link"
+      >
+        <Icon name="instagram" size={28} />
+        <span>Instagram</span>
+      </a>
+      <a
+        href="https://www.facebook.com/Inoxidablejf/"
+        target="_blank"
+        rel="noopener noreferrer"
+        className="social-cta__link"
+      >
+        <Icon name="facebook" size={28} />
+        <span>Facebook</span>
+      </a>
+    </div>
+  </section>
+);
+
+const MAPS_QUERY = "Industrias+Funtec+SAS,+Calle+42a+%2340e-08,+Bogotá,+Colombia";
+const MAPS_DIRECTIONS = `https://www.google.com/maps/dir/?api=1&destination=${MAPS_QUERY}`;
+
 const Footer = () => (
   <footer className="ftr" id="contacto">
     <div className="ftr__main">
@@ -333,21 +372,27 @@ const Footer = () => (
 
       <div className="ftr__col">
         <span className="ftr__label">Taller</span>
+        <span>Calle 42a #40e-08</span>
         <span>Bogotá, Colombia</span>
         <span>Lun – Sáb · 8:00 – 18:00</span>
       </div>
     </div>
 
+    <div className="ftr__map">
+      <iframe
+        title="Ubicación JF Inoxidable"
+        src="https://www.google.com/maps?q=Industrias+Funtec+SAS+Calle+42a+40e-08+Bogotá+Colombia&output=embed"
+        width="100%"
+        height="300"
+        style={{ border: 0, borderRadius: 8, display: "block" }}
+        allowFullScreen
+        loading="lazy"
+        referrerPolicy="no-referrer-when-downgrade"
+      />
+    </div>
+
     <div className="ftr__base">
       <span>© {new Date().getFullYear()} Inoxidable JF</span>
-      <div className="ftr__social">
-        <a href="#" aria-label="Instagram">
-          <Icon name="instagram" size={18} />
-        </a>
-        <a href="#" aria-label="Facebook">
-          <Icon name="facebook" size={18} />
-        </a>
-      </div>
     </div>
   </footer>
 );
@@ -366,14 +411,27 @@ export default function FuntecLanding() {
       <Hero scrollY={scrollY} />
       <BrandMarquee />
       <ProductBento />
+      <SocialSection />
       <Footer />
-      <a
-        href="https://wa.me/573106480288"
-        className="fab-wa"
-        aria-label="WhatsApp"
-      >
-        <Icon name="whatsapp" size={28} />
-      </a>
+      <div className="fab-group">
+        <a
+          href={MAPS_DIRECTIONS}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="fab-dir"
+          aria-label="Cómo llegar"
+        >
+          <Icon name="directions" size={24} />
+          <span className="fab-dir__label">Cómo llegar</span>
+        </a>
+        <a
+          href="https://wa.me/573106480288"
+          className="fab-wa"
+          aria-label="WhatsApp"
+        >
+          <Icon name="whatsapp" size={28} />
+        </a>
+      </div>
     </div>
   );
 }

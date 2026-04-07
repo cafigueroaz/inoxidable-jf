@@ -12,8 +12,8 @@ html {
 }
 
 :root {
-  --accent: #d97926;
-  --accent-h: #f09030;
+  --accent: #2ea043;
+  --accent-h: #3cb856;
   --bg: #0a0a0a;
   --bg-elev: #151515;
   --text: #ffffff;
@@ -463,6 +463,51 @@ body {
 .fab-wa .icon {
   color: #fff;
 }
+/* ── SOCIAL CTA SECTION ── */
+.social-cta {
+  padding: 5rem 5%;
+  text-align: center;
+  border-top: 1px solid var(--border);
+}
+
+.social-cta__title {
+  font-family: var(--font-display);
+  font-size: clamp(1.5rem, 3vw, 2.2rem);
+  text-transform: uppercase;
+  margin: 0.5rem 0 2.5rem;
+}
+
+.social-cta__links {
+  display: flex;
+  justify-content: center;
+  gap: 2rem;
+  flex-wrap: wrap;
+}
+
+.social-cta__link {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.9rem 2rem;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  color: var(--text);
+  text-decoration: none;
+  font-family: var(--font-display);
+  font-size: 1rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  transition: all 0.3s;
+}
+.social-cta__link:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+  transform: translateY(-3px);
+  box-shadow: 0 8px 24px rgba(46, 160, 67, 0.15);
+}
+.social-cta__link .icon {
+  flex-shrink: 0;
+}
 
 /* ── FOOTER ── */
 .ftr {
@@ -523,25 +568,12 @@ body {
   padding-top: 2rem;
   border-top: 1px solid var(--border);
   display: flex;
-  justify-content: space-between;
+  justify-content: center;
   align-items: center;
   font-size: 0.75rem;
   color: var(--text-mute);
   text-transform: uppercase;
   letter-spacing: 1px;
-}
-
-.ftr__social {
-  display: flex;
-  gap: 1.25rem;
-}
-
-.ftr__social a {
-  color: var(--text-mute);
-  transition: color 0.3s;
-}
-.ftr__social a:hover {
-  color: var(--accent);
 }
 
 /* ── UTILS ── */
