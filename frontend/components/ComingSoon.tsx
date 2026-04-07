@@ -6,52 +6,58 @@ import "./ComingSoon.css";
 // ─── DATA ───────────────────────────────────────────────────────────────────
 const NAV_LINKS = [
   { href: "#hero", label: "Inicio" },
-  { href: "#servicios", label: "Servicios" },
-  { href: "#marcas", label: "Marcas" },
-  { href: "#mapa", label: "Ubicación" },
-  { href: "#redes", label: "Contacto" },
+  { href: "#productos", label: "Productos" },
+  { href: "#contacto", label: "Contacto" },
 ];
 
-const SERVICES = [
+const PRODUCTS = [
   {
-    name: "Bumpers",
-    desc: "Defensa frontal y trasera en acero inoxidable y cromado",
-    icon: "bumpers",
+    id: 1,
+    name: "Bumpers en Acero Inoxidable",
+    desc: "Bumpers fabricados en acero inoxidable 304 con acabado espejo para Kenworth, Freightliner y Scania. Resistencia y brillo de exportación.",
+    img: "/products/bumper.jpg",
+    size: "feature",
+    alt: "Bumper en acero inoxidable acabado espejo para tractomula Kenworth fabricado por JF Inoxidable Bogotá",
   },
   {
-    name: "Cajas de herramientas",
-    desc: "Almacenamiento resistente a la medida de tu camión",
-    icon: "toolbox",
+    id: 2,
+    name: "Cajas de Herramientas",
+    desc: "Cajas de herramientas en acero inoxidable a la medida del chasis. Sellado hermético, cerradura reforzada y resistencia a la intemperie.",
+    img: "/products/cajas.png",
+    size: "wide",
+    alt: "Caja de herramientas en acero inoxidable sobre medida para camión de carga pesada",
   },
   {
-    name: "Estribos",
-    desc: "Acceso seguro con acabados pulidos o satinados",
-    icon: "steps",
+    id: 3,
+    name: "Tanques de Combustible",
+    desc: "Tanques en acero inoxidable para tractomulas de carga pesada. Capacidad personalizada y soldadura TIG certificada para largas travesías.",
+    img: "/products/tanque.png",
+    size: "wide",
+    alt: "Tanque de combustible en acero inoxidable para tractomula con soldadura TIG",
   },
   {
-    name: "Tanques",
-    desc: "Tanques de combustible y aire en acero inoxidable",
-    icon: "tank",
+    id: 4,
+    name: "Viseras Frontales",
+    desc: "Viseras aerodinámicas en acero inoxidable para Kenworth W900, T800 y modelos clásicos. Reduce reflejos y eleva el estilo.",
+    img: "/products/visera.jpg",
+    size: "small",
+    alt: "Visera frontal en acero inoxidable para Kenworth W900 instalada en cabina",
   },
   {
-    name: "Culatas",
-    desc: "Piezas de alta resistencia para motor pesado",
-    icon: "culatas",
+    id: 5,
+    name: "Estribos Antideslizantes",
+    desc: "Estribos en acero inoxidable con superficie antideslizante. Acceso seguro a la cabina y diseño robusto para uso diario.",
+    img: "/products/estribos.jpg",
+    size: "small",
+    alt: "Estribo antideslizante en acero inoxidable para camión de carga pesada",
   },
   {
-    name: "Persianas",
-    desc: "Persianas laterales con acabado espejo o mate",
-    icon: "blinds",
-  },
-  {
-    name: "Soldadura MIG/TIG",
-    desc: "Soldadura especializada en acero inox y hierro",
-    icon: "welding",
-  },
-  {
-    name: "Carrocería general",
-    desc: "Reparación y fabricación integral de carrocería",
-    icon: "bodywork",
+    id: 6,
+    name: "Guardapolvos",
+    desc: "Guardapolvos en acero inoxidable que protegen el chasis contra barro, escombros y agua salina. Fabricación a la medida del modelo.",
+    img: "/products/guardapolvo.png",
+    size: "wide",
+    alt: "Guardapolvo en acero inoxidable para tractomula Freightliner fabricado a la medida",
   },
 ];
 
@@ -61,28 +67,15 @@ const BRANDS = [
   "Volvo",
   "Mercedes-Benz",
   "Foton",
-  "Wokstar",
-  "Hino",
-  "Isuzu",
   "Mack",
   "International",
-  "Toyota",
-  "Nissan",
-  "Ford",
+  "Hino",
+  "Isuzu",
+  "Freightliner",
 ];
 
 // ─── HOOKS ──────────────────────────────────────────────────────────────────
-function useScrollY() {
-  const [y, setY] = useState(0);
-  useEffect(() => {
-    const h = () => setY(window.scrollY);
-    window.addEventListener("scroll", h, { passive: true });
-    return () => window.removeEventListener("scroll", h);
-  }, []);
-  return y;
-}
-
-function useInView(opts: IntersectionObserverInit = {}) {
+function useInView(threshold = 0.15) {
   const ref = useRef<HTMLElement | null>(null);
   const [visible, setVisible] = useState(false);
   useEffect(() => {
@@ -95,57 +88,41 @@ function useInView(opts: IntersectionObserverInit = {}) {
           obs.unobserve(el);
         }
       },
-      { threshold: 0.15, ...opts },
+      { threshold },
     );
     obs.observe(el);
     return () => obs.disconnect();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [threshold]);
   return [ref, visible] as const;
 }
 
-// ─── ICON COMPONENT ─────────────────────────────────────────────────────────
-interface IconProps {
-  name: string;
-  size?: number;
-  width?: number;
-  height?: number;
-  className?: string;
-}
+// ─── COMPONENTS ─────────────────────────────────────────────────────────────
 
-const Icon = memo(function Icon({
-  name,
-  size = 24,
-  width,
-  height,
-  className = "",
-}: IconProps) {
-  const w = width ?? size;
-  const h = height ?? size;
-  return (
+const Icon = memo(
+  ({
+    name,
+    size = 24,
+    className = "",
+  }: {
+    name: string;
+    size?: number;
+    className?: string;
+  }) => (
     <span
       className={`icon ${className}`}
       aria-hidden="true"
       style={{
-        width: w,
-        height: h,
+        width: size,
+        height: size,
         WebkitMaskImage: `url('/icons/${name}.svg')`,
         maskImage: `url('/icons/${name}.svg')`,
       }}
     />
-  );
-});
+  ),
+);
+Icon.displayName = "Icon";
 
-// ─── COMPONENTS ─────────────────────────────────────────────────────────────
-
-/* ── Header ── */
-interface HeaderProps {
-  darkMode: boolean;
-  setDarkMode: React.Dispatch<React.SetStateAction<boolean>>;
-}
-
-const Header = memo(function Header({ darkMode, setDarkMode }: HeaderProps) {
-  const scrollY = useScrollY();
+const Header = memo(({ scrollY }: { scrollY: number }) => {
   const [menuOpen, setMenuOpen] = useState(false);
   const scrolled = scrollY > 60;
 
@@ -153,14 +130,9 @@ const Header = memo(function Header({ darkMode, setDarkMode }: HeaderProps) {
     <>
       <header className={`hdr ${scrolled ? "hdr--scrolled" : ""}`}>
         <a href="#hero" className="hdr__logo">
-          <Image
-            src="/logo.png"
-            alt="Funtec Inoxidable JF"
-            className="hdr__logo-img"
-            width={140}
-            height={40}
-            priority
-          />
+          <span className="hdr__logo-text">
+            <span className="hdr__logo-jf">JF</span> INOXIDABLE
+          </span>
         </a>
         <nav className="hdr__nav">
           {NAV_LINKS.map((l) => (
@@ -168,33 +140,18 @@ const Header = memo(function Header({ darkMode, setDarkMode }: HeaderProps) {
               {l.label}
             </a>
           ))}
-          <button
-            className="dm-toggle"
-            onClick={() => setDarkMode((p) => !p)}
-            aria-label={
-              darkMode ? "Cambiar a modo claro" : "Cambiar a modo oscuro"
-            }
-            title={darkMode ? "Modo claro" : "Modo oscuro"}
-          >
-            <Icon name={darkMode ? "sun" : "moon"} size={16} />
-          </button>
         </nav>
         <button
           className={`burger ${menuOpen ? "burger--open" : ""}`}
           onClick={() => setMenuOpen(!menuOpen)}
-          aria-label="Menú de navegación"
-          aria-expanded={menuOpen}
+          aria-label="Menú"
         >
           <span />
           <span />
           <span />
         </button>
       </header>
-      <div
-        className={`mob-menu ${menuOpen ? "mob-menu--open" : ""}`}
-        role="dialog"
-        aria-modal="true"
-      >
+      <div className={`mob-menu ${menuOpen ? "mob-menu--open" : ""}`}>
         {NAV_LINKS.map((l) => (
           <a
             key={l.href}
@@ -205,293 +162,218 @@ const Header = memo(function Header({ darkMode, setDarkMode }: HeaderProps) {
             {l.label}
           </a>
         ))}
-        <button
-          className="dm-toggle dm-toggle--mob"
-          onClick={() => setDarkMode((p) => !p)}
-          aria-label="Cambiar tema"
-        >
-          {darkMode ? "☀ Modo claro" : "☾ Modo oscuro"}
-        </button>
       </div>
     </>
   );
 });
+Header.displayName = "Header";
 
-/* ── Hero ── */
-const Hero = memo(function Hero() {
-  const scrollY = useScrollY();
-  const parallax = Math.min(scrollY * 0.25, 150);
+const Hero = ({ scrollY }: { scrollY: number }) => {
+  const bgVideoRef = useRef<HTMLVideoElement | null>(null);
+  const colVideoRef = useRef<HTMLVideoElement | null>(null);
+
+  useEffect(() => {
+    const prefersReduced = window.matchMedia(
+      "(prefers-reduced-motion: reduce)",
+    ).matches;
+    if (prefersReduced) return;
+
+    const conn = (
+      navigator as Navigator & {
+        connection?: { saveData?: boolean; effectiveType?: string };
+      }
+    ).connection;
+    if (conn?.saveData) return;
+    if (conn?.effectiveType === "2g" || conn?.effectiveType === "slow-2g")
+      return;
+
+    bgVideoRef.current?.play().catch(() => {});
+    colVideoRef.current?.play().catch(() => {});
+  }, []);
 
   return (
     <section className="hero" id="hero">
       <div
-        className="hero__bg"
-        style={{ transform: `translateY(${parallax}px)` }}
-      />
-      <div className="hero__overlay" />
-      <div className="hero__noise" />
-      <div className="hero__content">
-        <span className="hero__badge">
-          Sitio en construcción · Bogotá, Colombia
-        </span>
-        <h1 className="hero__title">
-          Fabricamos lo que
-          <br />
-          tu camión <span className="hero__accent">necesita</span>
-        </h1>
-        <p className="hero__desc">
-          Taller especializado en piezas de acero inoxidable y hierro para
-          camiones de carga pesada. Bumpers, cajas de herramientas, estribos,
-          tanques y más — a la medida de tu flota.
-        </p>
-        <a
-          href="https://wa.me/573106480288?text=Hola%2C%20quiero%20cotizar%20una%20pieza"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="hero__cta"
+        className="hero__video-wrap"
+        style={{ transform: `scale(${1 + scrollY * 0.0005})` }}
+      >
+        <video
+          ref={bgVideoRef}
+          className="hero__video hero__video--bg"
+          muted
+          loop
+          playsInline
+          preload="metadata"
+          poster="/hero-poster.jpg"
+          aria-hidden="true"
         >
-          <span>Cotizar por WhatsApp</span>
-          <Icon name="arrow-right" size={18} />
+          <source src="/hero.webm" type="video/webm" />
+          <source src="/hero.mp4" type="video/mp4" />
+        </video>
+      </div>
+      <div className="hero__overlay" />
+
+      <div className="hero__split">
+        <div className="hero__content">
+          <span className="hero__badge">
+            Bogotá, Colombia • Calidad de Exportación
+          </span>
+
+          {/* Slogan visual decorativo */}
+          <p className="hero__slogan">Acero que define la potencia</p>
+
+          {/* H1 real con keywords */}
+          <h1 className="hero__title">
+            Bumpers y Lujos en{" "}
+            <span className="hero__accent">Acero Inoxidable</span>
+            <br />
+            para Tractomulas
+          </h1>
+
+          <p className="hero__desc">
+            Fabricamos bumpers, tanques, cajas de herramientas y estribos en
+            acero inoxidable 304 a la medida para Kenworth, Freightliner,
+            Scania, Volvo y más. Acabado espejo, durabilidad de exportación.
+            Taller propio en Bogotá.
+          </p>
+          <div className="hero__actions">
+            <a href="https://wa.me/573106480288" className="btn-primary">
+              Cotizar Ahora
+            </a>
+            <a href="#productos" className="btn-secondary">
+              Ver Catálogo
+            </a>
+          </div>
+        </div>
+
+        <div className="hero__video-col">
+          <video
+            ref={colVideoRef}
+            className="hero__video hero__video--col"
+            muted
+            loop
+            playsInline
+            preload="metadata"
+            poster="/hero-poster.jpg"
+            aria-hidden="true"
+          >
+            <source src="/hero.webm" type="video/webm" />
+            <source src="/hero.mp4" type="video/mp4" />
+          </video>
+        </div>
+      </div>
+    </section>
+  );
+};
+
+const ProductBento = () => {
+  const [ref, visible] = useInView();
+  return (
+    <section
+      className="products"
+      id="productos"
+      ref={ref as React.RefObject<HTMLElement>}
+    >
+      <div className={`container ${visible ? "fade-in--visible" : ""}`}>
+        <span className="label">Nuestra Línea</span>
+        <h2 className="title">
+          Fabricación de Accesorios en Acero Inoxidable para Camiones
+        </h2>
+        <div className="bento-grid">
+          {PRODUCTS.map((p) => (
+            <div key={p.id} className={`bento-item bento-item--${p.size}`}>
+              <Image
+                src={p.img}
+                alt={p.alt}
+                className="bento-item__img"
+                fill
+                sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+              />
+              <div className="bento-item__content">
+                <h3>{p.name}</h3>
+                <p>{p.desc}</p>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+};
+
+const BrandMarquee = () => (
+  <div className="brand-bar">
+    <div className="marquee-track">
+      {[...BRANDS, ...BRANDS].map((brand, i) => (
+        <span key={i} className="brand-item">
+          {brand}
+        </span>
+      ))}
+    </div>
+  </div>
+);
+
+const Footer = () => (
+  <footer className="ftr" id="contacto">
+    <div className="ftr__main">
+      <div className="ftr__brand">
+        <span className="hdr__logo-text">
+          <span className="hdr__logo-jf">JF</span> INOXIDABLE
+        </span>
+        <p className="ftr__tagline">
+          Fabricación de accesorios en acero inoxidable para tractomulas.
+        </p>
+      </div>
+
+      <div className="ftr__col">
+        <span className="ftr__label">Contacto</span>
+        <a href="https://wa.me/573106480288">+57 310 648 0288</a>
+        <a href="mailto:ventas@inoxidablejf.com">ventas@inoxidablejf.com</a>
+      </div>
+
+      <div className="ftr__col">
+        <span className="ftr__label">Taller</span>
+        <span>Bogotá, Colombia</span>
+        <span>Lun – Sáb · 8:00 – 18:00</span>
+      </div>
+    </div>
+
+    <div className="ftr__base">
+      <span>© {new Date().getFullYear()} Inoxidable JF</span>
+      <div className="ftr__social">
+        <a href="#" aria-label="Instagram">
+          <Icon name="instagram" size={18} />
+        </a>
+        <a href="#" aria-label="Facebook">
+          <Icon name="facebook" size={18} />
         </a>
       </div>
-      {/* Scroll hint keeps inline SVG for animated child */}
-      <div className="hero__scroll-hint" aria-hidden="true">
-        <svg
-          width="20"
-          height="30"
-          viewBox="0 0 20 30"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="1.5"
-        >
-          <rect x="1" y="1" width="18" height="28" rx="9" />
-          <line x1="10" y1="7" x2="10" y2="12" className="hero__scroll-dot" />
-        </svg>
-      </div>
-    </section>
-  );
-});
-
-/* ── Services ── */
-interface ServiceCardProps {
-  service: (typeof SERVICES)[number];
-  index: number;
-}
-
-const ServiceCard = memo(function ServiceCard({
-  service,
-  index,
-}: ServiceCardProps) {
-  const [ref, visible] = useInView();
-  return (
-    <div
-      ref={ref as React.RefObject<HTMLDivElement>}
-      className={`svc-card ${visible ? "svc-card--visible" : ""}`}
-      style={{ transitionDelay: `${index * 70}ms` }}
-      role="article"
-      aria-label={service.name}
-    >
-      <div className="svc-card__icon" aria-hidden="true">
-        <Icon name={service.icon} size={36} />
-      </div>
-      <h3 className="svc-card__name">{service.name}</h3>
-      <p className="svc-card__desc">{service.desc}</p>
-      <div className="svc-card__glow" />
     </div>
-  );
-});
+  </footer>
+);
 
-const Services = memo(function Services() {
-  const [ref, visible] = useInView();
-  return (
-    <section className="services" id="servicios">
-      <div
-        ref={ref as React.RefObject<HTMLDivElement>}
-        className={`services__header ${visible ? "fade-in--visible" : ""}`}
-      >
-        <span className="label">Lo que hacemos</span>
-        <h2 className="title">Servicios</h2>
-      </div>
-      <div className="services__grid">
-        {SERVICES.map((s, i) => (
-          <ServiceCard key={s.name} service={s} index={i} />
-        ))}
-      </div>
-    </section>
-  );
-});
-
-/* ── Brands Marquee ── */
-const BrandsMarquee = memo(function BrandsMarquee() {
-  const [ref, visible] = useInView();
-  const doubled = [...BRANDS, ...BRANDS];
-  return (
-    <section
-      className="marquee"
-      id="marcas"
-      ref={ref as React.RefObject<HTMLElement>}
-    >
-      <div
-        className={`marquee__inner ${visible ? "marquee__inner--running" : ""}`}
-      >
-        <div className="marquee__track">
-          {doubled.map((b, i) => (
-            <span key={`${b}-${i}`} className="marquee__chip">
-              {b}
-            </span>
-          ))}
-        </div>
-        <div className="marquee__track" aria-hidden="true">
-          {doubled.map((b, i) => (
-            <span key={`dup-${b}-${i}`} className="marquee__chip">
-              {b}
-            </span>
-          ))}
-        </div>
-      </div>
-    </section>
-  );
-});
-
-/* ── Map (lazy) ── */
-const MapSection = memo(function MapSection() {
-  const [ref, visible] = useInView();
-  const [loaded, setLoaded] = useState(false);
-  useEffect(() => {
-    if (visible) setLoaded(true);
-  }, [visible]);
-
-  return (
-    <section
-      className="map"
-      id="mapa"
-      ref={ref as React.RefObject<HTMLElement>}
-    >
-      <div className={`map__header ${visible ? "fade-in--visible" : ""}`}>
-        <span className="label">Encuéntranos</span>
-        <h2 className="title">Ubicación</h2>
-      </div>
-      <div className="map__frame">
-        {loaded ? (
-          <iframe
-            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3977.3!2d-74.1362213!3d4.5400659!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x8e3fa1faee2f95cb%3A0x47b920ca44010105!2sFuntec%20-%20Inoxidable%20JF!5e0!3m2!1ses!2sco!4v1700000000000"
-            width="100%"
-            height="100%"
-            style={{ border: 0 }}
-            allowFullScreen
-            loading="lazy"
-            referrerPolicy="no-referrer-when-downgrade"
-            title="Ubicación de Funtec Inoxidable JF en Bogotá"
-          />
-        ) : (
-          <div className="map__placeholder">
-            <Icon name="map-pin" size={40} />
-            <span>Cargando mapa…</span>
-          </div>
-        )}
-      </div>
-    </section>
-  );
-});
-
-/* ── Social / Contact ── */
-const Social = memo(function Social() {
-  const [ref, visible] = useInView();
-  return (
-    <section
-      className="social"
-      id="redes"
-      ref={ref as React.RefObject<HTMLElement>}
-    >
-      <div className={`social__inner ${visible ? "fade-in--visible" : ""}`}>
-        <span className="label">Conéctate</span>
-        <h2 className="title">Redes y contacto</h2>
-        <div className="social__btns">
-          <a
-            href="https://instagram.com/inoxidablejf"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="social__btn"
-            aria-label="Síguenos en Instagram"
-          >
-            <Icon name="instagram" size={20} />
-            <span>Instagram</span>
-          </a>
-          <a
-            href="https://facebook.com"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="social__btn"
-            aria-label="Síguenos en Facebook"
-          >
-            <Icon name="facebook" size={20} />
-            <span>Facebook</span>
-          </a>
-          <a
-            href="https://wa.me/573106480288"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="social__btn social__btn--wa"
-            aria-label="Escríbenos por WhatsApp"
-          >
-            <Icon name="whatsapp" size={20} />
-            <span>WhatsApp</span>
-          </a>
-        </div>
-      </div>
-    </section>
-  );
-});
-
-/* ── Footer ── */
-const Footer = memo(function Footer() {
-  return (
-    <footer className="ftr">
-      <span className="ftr__copy">
-        © {new Date().getFullYear()} Funtec — Inoxidable JF · Bogotá, Colombia
-      </span>
-      <span className="ftr__brand">inoxidablejf.com</span>
-    </footer>
-  );
-});
-
-/* ── WhatsApp FAB ── */
-const WhatsappFAB = memo(function WhatsappFAB() {
-  const scrollY = useScrollY();
-  const show = scrollY > 400;
-
-  return (
-    <a
-      href="https://wa.me/573106480288?text=Hola%2C%20quiero%20cotizar%20una%20pieza"
-      target="_blank"
-      rel="noopener noreferrer"
-      className={`fab ${show ? "fab--visible" : ""}`}
-      aria-label="Contactar por WhatsApp"
-    >
-      <Icon name="whatsapp" size={26} className="fab__icon" />
-      <span className="fab__tooltip">¿Necesitas una cotización?</span>
-    </a>
-  );
-});
-
-// ─── MAIN APP ───────────────────────────────────────────────────────────────
 export default function FuntecLanding() {
-  const [darkMode, setDarkMode] = useState(true);
+  const [scrollY, setScrollY] = useState(0);
+  useEffect(() => {
+    const h = () => setScrollY(window.scrollY);
+    window.addEventListener("scroll", h, { passive: true });
+    return () => window.removeEventListener("scroll", h);
+  }, []);
 
   return (
-    <div
-      className={darkMode ? "" : "theme--light"}
-      style={{ minHeight: "100vh", display: "flex", flexDirection: "column" }}
-    >
-      <Header darkMode={darkMode} setDarkMode={setDarkMode} />
-      <Hero />
-      <div className="divider" />
-      <Services />
-      <BrandsMarquee />
-      <MapSection />
-      <Social />
+    <div className="theme--dark">
+      <Header scrollY={scrollY} />
+      <Hero scrollY={scrollY} />
+      <BrandMarquee />
+      <ProductBento />
       <Footer />
-      <WhatsappFAB />
+      <a
+        href="https://wa.me/573106480288"
+        className="fab-wa"
+        aria-label="WhatsApp"
+      >
+        <Icon name="whatsapp" size={28} />
+      </a>
     </div>
   );
 }
