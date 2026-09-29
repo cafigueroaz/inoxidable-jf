@@ -1,0 +1,120 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Get a free hosted Postgres database in seconds: `npx create-db`
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+
+enum Role {
+  ADMIN
+  EDITOR
+}
+
+model User {
+  id        String   @id @default(uuid())
+  name      String
+  email     String   @unique
+  password  String
+  role      Role     @default(EDITOR)
+  createdAt DateTime @default(now())
+}
+
+enum ContactStatus {
+  NEW
+  CONTACTED
+  CLOSED
+}
+
+model Contact {
+  id              String        @id @default(uuid())
+  name            String
+  phone           String
+  company         String?
+  serviceInterest String
+  status          ContactStatus @default(NEW)
+  createdAt       DateTime      @default(now())
+}
+
+model VehicleType {
+  id    String  @id @default(uuid())
+  name  String  @unique
+  slug  String  @unique
+  works Work[]
+}
+
+model Brand {
+  id     String  @id @default(uuid())
+  name   String  @unique
+  slug   String  @unique
+  models Model[]
+  works  Work[]
+}
+
+model Model {
+  id      String  @id @default(uuid())
+  name    String
+  slug    String  @unique
+  brandId String
+  brand   Brand   @relation(fields: [brandId], references: [id])
+  works   Work[]
+}
+
+model Service {
+  id         String        @id @default(uuid())
+  name       String        @unique
+  slug       String        @unique
+  workServices WorkService[]
+  prices     Price[]
+}
+
+model Work {
+  id            String      @id @default(uuid())
+  title         String
+  description   String
+  published     Boolean     @default(false)
+  vehicleTypeId String
+  vehicleType   VehicleType @relation(fields: [vehicleTypeId], references: [id])
+  brandId       String
+  brand         Brand       @relation(fields: [brandId], references: [id])
+  modelId       String
+  model         Model       @relation(fields: [modelId], references: [id])
+  photos        WorkPhoto[]
+  workServices  WorkService[]
+  createdAt     DateTime    @default(now())
+}
+
+model WorkPhoto {
+  id        String   @id @default(uuid())
+  url       String
+  order     Int
+  workId    String
+  work      Work     @relation(fields: [workId], references: [id])
+  createdAt DateTime @default(now())
+}
+
+model WorkService {
+  workId    String
+  serviceId String
+  work      Work    @relation(fields: [workId], references: [id])
+  service   Service @relation(fields: [serviceId], references: [id])
+
+  @@id([workId, serviceId])
+}
+
+model Price {
+  id        String   @id @default(uuid())
+  minPrice  Int
+  maxPrice  Int
+  note      String?
+  serviceId String
+  service   Service  @relation(fields: [serviceId], references: [id])
+  createdAt DateTime @default(now())
+}
