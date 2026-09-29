@@ -21,14 +21,14 @@ Sitio en producción: https://www.inoxidablejf.com (Next.js) — landing con her
 
 ### Estructura de carpetas
 
-Hermanas, cada una con repo git independiente:
+Monorepo `inoxidable-jf` (GitHub). Solo `backend/` queda fuera del repo (ignorado en `.gitignore` raíz, conserva su propio `.git` local).
 
 ```
 InoxidableJF/
-├── backend/              # NestJS legacy — solo boilerplate + schema/seed, no se modifica
+├── backend/               # NestJS legacy — ignorado, no se modifica
 ├── frontend/              # Next.js legacy — EN PRODUCCIÓN, no se modifica
-├── backend-express/       # actual — en construcción
-└── frontend-angular/      # actual — pendiente de iniciar
+├── backend-express/       # actual — versionado en el monorepo
+└── frontend-angular/      # actual — pendiente de iniciar (irá en el monorepo)
 ```
 
 ## Patrón de estructura
